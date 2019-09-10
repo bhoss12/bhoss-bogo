@@ -1,0 +1,136 @@
+Ansible and Jenkins — automate your scritps
+
+
+Valery Tikhonov
+Valery Tikhonov
+Follow
+Apr 27 · 7 min read
+
+The topic I’d like to reveal in this article may seem obvious, but I was surprised how many companies don’t follow this best practice.
+For impatient:
+Automate every action you’ve done more than once.
+Don’t use Jenkins static groovy library.
+Use Jenkins + Ansible + Python for automation.
+The problem
+Any developer in his work always faces a situation when some action needs to be repeated. Sometimes these actions are urgent and need to be done very quickly. F.e. your prod is down and you need to rebuild indexes on your database, or repopulate images on your dashboard, or re-elect new leader in your distributed back-end.
+It is good to remember these 3 golden rules, which can make your life easier:
+If you repeat an action more, than twice — it should be automated.
+If there are several steps to be done — they should be put in one script.
+When there is some complex set up before running these actions — everything should be documented.
+Following these rules will decrease the time you usually spend on firefighting. It may seem unnecessary to spend time on such automation from business prospect, but in real life you free your time for development new features, as well as reduce the time needed to fix a problem.
+Another problem is a bus factor. When you have manual actions — there will always be a person, who knows critical and unique information. If this person (dies) leaves your company — you won’t be able to fix the problem quickly, as knowledge would be lost. Documented scripts with actions are your friends here.
+Custom scripts
+At some point all developers come to the rules, mentioned above. They start to automate their actions by creating scripts. It is good, but here hides the danger — such scripts are usually written in different programming languages and are stored in many repositories.
+It is hard to maintain such a zoo. And sometimes even hard to find a script for a particular problem. Maybe some scripts will be even re-implemented several times. Be ready for it.
+Another problem is the environment. Such scripts are friendly to it’s creator’s environment. And now imagine you’ve found an old script, written in some language you don’t have installed in your system. What should you do to quickly run it and fix the problem?
+Jenkins shared libraries
+One solution here is to make Jenkins solve your problem. You have groovy shared libraries with scripts, which do fixes you need. And Jenkins jobs, each one for the problem you need to fix. Everything in one repository.
+The approach is good, but not the implementation.
+It is really hard to develop such scripts. I’ve faced a lot of problems with it, because there is no guarantee, that a code, you’ve tested locally will work in Jenkins. The main reason lies in different Groovy version.
+Python scripts
+To solve the versioning problem one can use Python + Conda/ venv. Python itself is very good for scripting and quite widespread. There is a higher chance somebody in your team knows Python, than Groovy.
+With the help of Conda you can use the same Python version everywhere.
+I also highly recommend docopt for Python. Do you remember about the third rule of automation? It is much better when your documentation comes together with the code, because it reduces the maintenance difficulty.
+Comments in script are not always able to explain you why and how this script should be run and what are the arguments value. The docopt will handle parameters and default values for you as well as printing the help message on every wrong argument provided or just by demand.
+#!/usr/bin/env python 
+""" 
+Very important script. It should be run when our prod freezes for some seconds. It will get all missed transactions, ask for confirmation and process results. 
+Usage: 
+    transaction.py --issuer=<i> --bank=<b> [--slack=<s>] 
+    transaction.py -h | --help 
+Options: 
+-h --help     show this help message and exit 
+--issuer=<i>  Which issuer to use for transaction confirmation.[default: primary] 
+--bank=<b>    Which bank's backend to use. --slack=<s> slack callback to notify 
+"""
+Ansible + Python
+After previous stage you have self-documented version-independent script. A developer’s dream. What can be improved?
+First of all they are still a bit coupled with python dependencies. If you are going to use these python scripts as a company standard — you have to force everybody to install conda in order to be able to run these scripts.
+Second — you still need a central storage for such scripts. The unique source of truth, where fix for ideally any problem can be found.
+To solve both issues you need to use Ansible and have single repository for it’s scripts (in huge companies you should prefer per-department repository).
+Every problem, which can be solved with scripts turns into the role. Each role has it’s Readme, where problem and solution are described. Root’s readme points to each role’s readme with a small comment of a problem it solves.
+## Problem 
+Sometimes we have a pikes of a high load. During this load our slaves can loose master and some transactions won't be processed. 
+## Solution 
+Such missed transactions are saved by slaves in a special queue. This role gets these transactions, asks bank's confirmation for each and processes the results. 
+## Run 
+ansible-playbook resolve_transactions.yaml -i inventory/prod/hosts.ini -extra-vars "-i='primary' -b='my_bank'"
+It doesn’t replace your Python scripts, as plain ansible scripts are harder to debug and develop. Instead of it all python scripts go into files or templates inside the role and are called as a part of the play.
+The minimal scenario usually contains conda creation and deps installation, as well as running script itself (for simplicity this role assumes conda is installed).
+--- 
+- block: 
+    - name: "Copy requirements.txt" 
+      copy: 
+        src: "requirements.txt" 
+        dest: "/tmp/{{ role_name }}/" 
+    - name: "Copy python executable" 
+      template: 
+        src: "transaction.py.j2" 
+        dest: "/tmp/{{ role_name }}/transaction.py" 
+    - name: "Create Conda Env for {{ python_version }}" 
+      shell: "conda create -p /tmp/{{ role_name }}/{{ conda_env }} --copy -y python={{ python_version }}" 
+    - name: "Run my script" 
+      shell: "source activate /tmp/{{ role_name }}/{{ conda_env }} && {{ item }}" 
+      with_items: 
+        - pip install -r /tmp/{{ role_name }}/requirements.txt 
+        - "python /tmp/{{ role_name }}/transaction.py --issuer={{ issuer }} --bank={{ bank }} --slack={{ slack }}" 
+      args: 
+        executable: /bin/bash 
+  always: 
+     - name: "Clean up" 
+       file: 
+         state: absent 
+         path: "/tmp/{{ role_name }}/"
+Here you can benefit from ansible variable system:
+Group variables are stored per environment, as well as global variables, which are symlinks to all.
+
+Each role can also has it’s specific default variables, which are overridden by ansible input to the script.
+Now you can transfer the first line support to another department, just pointing them to a single repository with full documentation and scripts. All they need to know is how to run ansible.
+Jenkins + Ansible + Python
+The problem with first line support is they are usually cheaper and less qualified than usual developers. They also may run Windows and have no idea about what Ansible is. The ideal solution for them is to provide a document with rules like “If you suspect this problem — push that button”. And you can do it with the help of Jenkins.
+First of all ensure you have ansible plugin installed.
+Second — create credentials for ssh usage.
+Third — write a pipeline for every role you wish to create a button for. You can place it in the role’s root directory in front of Readme and make repository root’s Jenkins pipeline scan for all pipelines in roles/ and create child Jenkins pipelines if necessary.
+Your typical pipeline would have input params:
+parameters { 
+    choice(choices: ['dev','prod', 'stage'], description: 'On which Environment should I run this script?', name: 'environment') 
+}
+As well as a first step should be cloning your repo with ansible:
+stage(Clone Git repository') {
+  steps {
+    git branch: 'master', 
+    credentialsId: <some-uuid>', 
+    url: "${env.PROJECT_REPO}" 
+  } 
+}
+And calling the ansible playbook itself:
+stage('Run ansible script') {
+  steps { 
+    script { 
+       if (params.environment == 'prod') {
+         env.INVENTORY = "inventories/prod/hosts.ini" 
+         env.ISSUER = "primary" 
+       } else if(params.environment == 'dev') {
+         env.INVENTORY = "inventories/dev/hosts.ini"
+         env.ISSUER = "secondary" 
+       } else if(params.environment == 'stage') {
+         env.INVENTORY = "inventories/stage/hosts.ini" 
+         env.ISSUER = "secondary" 
+       } else { 
+         throw new Exception("Unknown environment: ${params.environment}") 
+       }
+    } 
+    ansiblePlaybook( 
+            playbook: "${env.PLAYBOOK_ROOT}/deploy_service.yaml", 
+            inventory: "${env.PLAYBOOK_ROOT}/${env.INVENTORY}",   
+            credentialsId: '<your-credentials-id>', 
+            extras: '-e "i=' + "${ env.ISSUER }" + ' b='my_bank"+ '" -v') 
+  }
+}
+After creating Jenkins jobs all you need is link them to each role’s readme, as well as any connected project’s readme.
+Summing up
+Automated scripts allow you to fix problems much faster, but they also require some effort to make them easy to use and platform independent.
+Self-documented scripts allow you to reduce bus factor and onboarding time for newcomers.
+Centralized repository with standardized tools allows you to do a quick responsibility handover to another team in future.
+Ansible + Jenkins allows you to fix problem by pressing a single Jenkins button (even when you are at vacation and have only your mobile phone with you) or running an ansible script, when your Jenkins is down.
+Jenkins Buttons allows you to reduce the qualification requirements and the price of the first line support.
