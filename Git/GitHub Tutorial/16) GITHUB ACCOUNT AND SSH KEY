@@ -1,0 +1,103 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/GitHub_Account_SSH_Key.php
+
+
+
+
+
+GitHub Account
+This is the continuation from the previous tutorial: GIT and GitHub - 3. commit and diff.
+
+
+
+Setting up a GitHub Account
+To setup a GitHub account, please check https://github.com/.
+
+GitHub_Account.png
+
+We want to create a new Repository:
+
+CreatingANewRepository.png
+
+ 
+
+git-demo_repository.png
+
+Then, a guide page pops up that has git commands which are familiar to us now:
+
+git_demo_cmd_line.png
+
+
+
+How to connect to GitHub Account
+To upload to GitHub, we need to setup couple of things on client side:
+
+Create SSH key - we'll be using RSA public/private cryptography
+HTTPS or SSH - either one will work but GitHub prefers SHH
+
+
+Creating SSH Key
+We want to create a SSH key.
+
+Type in ssh-keygen -t rsa -C "email_address" where -t allows us to set the key type:
+
+RSA_Key_Generation.png
+
+Then, go to the personal folder:
+
+dot_ssh_directory.png
+
+
+SSH Key to GitHub
+Now we want to copy the key and put that into the SSH section of GitHub.
+
+Copy the key:
+CopyKEY.png
+
+In GitHub site, Account Setting>SSH keys>Add SSH Key. Paste the key we copied. Then, click "Add key".
+Account_SSH_Keys.png
+
+GitHubHasKey.png
+
+
+
+
+Checking SSH
+We can check if it really works by running ssh -T git@github.com command:
+
+CheckingIfItWorks.png
+
+Continue to: GIT and GitHub - 5. Uploading to GitHub.
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
