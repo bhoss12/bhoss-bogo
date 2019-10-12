@@ -1,0 +1,189 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Merge_Conflicts_with_Simple_Example.php
+
+
+
+Creating conflicts
+In the previous chapter (Fast-forward merge), the merge was very easy because we did not have any conflicts. In other words, in that case, the master branch (trunk) has no updates since we branched 'car' off the 'master'. All we had to do was simply appending our new updates to the master trunk.
+
+In this chapter, we'll create conflicts by updating our 'master' branch at the same time we update the 'car' branch. So, when we try to merge the 'car' branch, we'll have two different versions of 'Book1', and git has no way to figure out which one to take in.
+
+We are currently on the 'master' branch and we have another branch called 'car':
+
+k@laptop:~/GitDemo$ ls
+Appendix  Book1  Introduction
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+The log:
+
+k@laptop:~/GitDemo$ git log --oneline
+d567a72 Merge branch 'car'
+4552553 Added 2nd commit to the car branch
+...
+b440952 initial commit
+Check if it's clean:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+Let's modify 'Book1' on the 'master' by adding the following as its first line:
+
+Year 2014 - updated master branch
+Of course, we need to commit it:
+
+k@laptop:~/GitDemo$ git add .
+k@laptop:~/GitDemo$ git commit -m "updated 1st line 2014 on master branch"
+[master 79b0888] updated 1st line 2014 on master branch
+ 1 file changed, 1 insertion(+)
+Updated log:
+
+k@laptop:~/GitDemo$ git log --oneline
+79b0888 updated 1st line 2014 on master branch
+d567a72 Merge branch 'car'
+4552553 Added 2nd commit to the car branch
+a7f55e3 added a line at the beginning
+...
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+Then, we switch to the 'car' branch.
+
+k@laptop:~/GitDemo$ git checkout car
+Switched to branch 'car'
+k@laptop:~/GitDemo$ git branch
+* car
+  master
+k@laptop:~/GitDemo$ git status
+On branch car
+nothing to commit, working directory clean
+Then, add the similar line as we've done on the 'master' as its first line:
+
+Year 2014 - updated car branch
+Commit:
+
+k@laptop:~/GitDemo$ git add .
+k@laptop:~/GitDemo$ git commit -m "updated 1st line 2015 on car branch" 
+[car a428001] updated 1st line 2015 on car branch
+ 1 file changed, 1 insertion(+)
+Log for the 'car' branch:
+
+k@laptop:~/GitDemo$ git log --oneline
+a428001 updated 1st line 2015 on car branch
+4552553 Added 2nd commit to the car branch
+a7f55e3 added a line at the beginning
+...
+
+
+ 
+
+Fixing Merge conflicts
+Now we have two different versions of 'Book1' that were committed to each branch, 'master' and 'car'.
+
+We're now on 'master' branch:
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+Let's try to merge them;
+
+k@laptop:~/GitDemo$ git merge car
+Auto-merging Book1
+CONFLICT (content): Merge conflict in Book1
+Automatic merge failed; fix conflicts and then commit the result.
+k@laptop:~/GitDemo$ 
+Basically, git is saying, "I don't know which one is the most up-to-date version. It's your job to fix it".
+
+Note that at this merging phase, we're not on any specific branch but we're somewhere "floating land" which is not 'master' nor 'car'.
+
+But when we open the 'Book1' in our working directory, it shows something like this:
+
+k@laptop:~/GitDemo$ git merge car
+Auto-merging Book1
+CONFLICT (content): Merge conflict in Book1
+Automatic merge failed; fix conflicts and then commit the result.
+k@laptop:~/GitDemo$ 
+Clearly, it's not the one from 'master' nor from 'car'.
+
+<<<<<<< HEAD
+Year 2014 - updated master branch
+=======
+Year 2015 - updated car branch
+>>>>>>> car
+It shows the difference in the two versions of 'Book1'. We're lucky because our sample is simple enough to fix manually, however, in real cases, it could become really messy, and that's the reason why we should minimize the conflicts by commit as often as possible.
+
+Ok, let's combine the conflicts like this:
+
+Year 2015 - updated by master & car at the same time
+Save it and then commit:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+
+Unmerged paths:
+  (use "git add ..." to mark resolution)
+
+	both modified:      Book1
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+k@laptop:~/GitDemo$ git add .
+
+k@laptop:~/GitDemo$ git commit -m "fixed the conflict, set year = 2015"
+[master 1ae8f09] fixed the conflict, set year = 2015
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+Now we resolved the conflicts. Let's look at the graph log:
+
+graph_log_merge_conflicts.png
+Here is the reading from the graph log above:
+
+"d567a72 Merge branch 'car'" -
+Since we branched off the 'car', we did fast-forward merge in the previous chapter (Fast-forward merge)
+"a428001 updated 1st line 2015 on car branch", "79b0888 updated 1st line 2014 on master branch" -
+Each branch has its own update.
+" 1ae8f09 fixed the conflict, set year = 2015" -
+Then, both branches merged.
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
