@@ -1,0 +1,162 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Rebase.php
+
+
+
+
+Rebase
+Rebasing is the process of moving a branch to a new base commit.
+
+Here is the current status of our repo:
+
+current.png
+
+# Start a new feature
+$ git checkout -b new-feature master
+new_feature_branch.png
+
+# Edit files
+$ git commit -a -m "Start developing a feature"
+StartDevelopingNewFeature.png
+
+In the middle of our feature, we found there's a security hole in our project:
+
+# Create a hotfix branch based off of master
+$ git checkout -b hotfix master
+HotFixBranch.png
+
+# Edit files
+$ git commit -a -m "Fix security hole"
+SecurityHole.png
+
+
+Merge the hotfix into master:
+
+# Merge back into master
+$ git checkout master
+$ git merge hotfix
+MergeHotfix.png
+
+
+Delete the hotfix branch:
+
+$ git branch -d hotfix
+DeleteHotfixBranch.png
+Instead of a plain git merge, we'll integrate the feature branch with a rebase to maintain a linear history:
+
+$ git checkout new-feature
+
+$ git rebase master
+First, rewinding head to replay your work on top of it...
+Applying: Start developing a feature
+
+AfterRebasing.png
+The rebase moves new-feature to the tip of master, which lets us do a standard fast-forward merge from master:
+
+$ git checkout master
+Switched to branch 'master'
+
+$ git branch
+* master
+  new-feature
+
+$ git merge new-feature
+Updating 538a0fb..57a3fd0
+Fast-forward
+...
+
+NewFeatureMerge.png
+
+
+ 
+
+
+
+More on Rebase - rebase vs three-way merge
+This section is largely based on Version Control with Git - 07 - Rebase
+
+RebasePic.png
+Picture source: Rewriting history
+
+
+Inital.png
+
+The primary reason for rebasing is to maintain a linear project history. For example, consider a situation where the master branch has progressed since we started working on a feature test:
+
+RebaseSample.png
+When we merge the testing branch with the master, git merges them with three bases (two current commits on each branch and the commit from the branched off:
+
+ThreeMergeBases.png
+
+This merge is called Three Way Merge, and it gives us a new commit, C6 in our example:
+
+ThreeWayMerge.png
+
+normal_merge.png
+
+This is different from rebasing. We can think of the "Three Way Merge" as a "direct" merge while merging with rebasing is two step process: rebasing and then merging.
+
+The example we just saw results in a 3-way merge and a merge commit, while the rebasing results in a fast-forward merge and a perfectly linear history.
+
+Again, when we rebase, we're changing our commit history: we're changing the root commit a branch is off of. In other words, we're resetting the base commit to the most recent commit of the branch we're planning to merge to.
+
+
+Rebasing_move.png
+Note that the base moved to 'C4' from 'C2' when we do rebase.
+
+$ git branch
+* Testing
+  master
+$ git rebase master
+First, rewinding head to replay your work on top of it...
+Applying: C3
+Applying: C5
+
+
+
+Now when we do a merge after the rebase, the only thing git has to do is 'fast-forward merge':
+
+$ git checkout master
+Switched to branch 'master'
+
+$ git merge Testing
+Updating b4c2543..50fbf83
+Fast-forward
+...
+
+fast_forward_rebase_merge.png
+
+SourceTreeRebase.png
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
