@@ -1,0 +1,159 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Creating_Switching_Branches.php
+
+
+Head & Master
+Here is the initial file structure for heads under .git directory:
+
+dot_git_directory.png
+Currently, the HEAD is at master branch which is the default branch (.git/refs/heads/master). Actually, the heads directory contains all the heads and we see our master branch is right there.
+
+
+
+
+
+Creating Branches
+Let's create a new branch called 'car':
+
+k@laptop:~/GitDemo$ git branch car
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+Now we have two branches and the (*) indicates the HEAD is pointing to the master branch. If we look at the directory structure again:
+
+dot_git_directory_with_car_branch.png
+Now we have two heads for our branches ('car' and 'master').
+
+
+
+ 
+
+Switching Branches
+Switching to another branch is simple: use git checkout branch_name:
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+
+k@laptop:~/GitDemo$ git checkout car
+Switched to branch 'car'
+
+k@laptop:~/GitDemo$ git branch
+* car
+  master
+Now we are on 'car' branch.
+
+But each of our two branches points to the same thing:
+
+k@laptop:~/GitDemo$ git branch
+* car
+  master
+k@laptop:~/GitDemo$ ls
+Appendix  Book1  Introduction
+
+k@laptop:~/GitDemo$ git checkout master
+Switched to branch 'master'
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+k@laptop:~/GitDemo$ ls
+Appendix  Book1  Introduction
+
+Let's modify the 'Book1' in t he'car' branch.
+
+So, the first line of the 'Book1' looks like this:
+
+This is in 'car' branch.
+Then, we do commit:
+
+k@laptop:~/GitDemo$ git status
+On branch car
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1
+
+no changes added to commit (use "git add" and/or "git commit -a")
+k@laptop:~/GitDemo$ 
+k@laptop:~/GitDemo$ git add Book1
+k@laptop:~/GitDemo$ git commit -m "added a line at the beginning"
+[car a7f55e3] added a line at the beginning
+ 1 file changed, 2 insertions(+)
+Then, check the log:
+
+k@laptop:~/GitDemo$ git log --oneline
+a7f55e3 added a line at the beginning
+0c97f22 removed three updates
+42dacd8 name changed
+...
+28a0a9e deleted OldBook
+09a5016 Adding OldBook
+b440952 initial commit
+Note that this log for 'car' branch not for 'master' branch. To see it, we can switch back to 'master' and check the log:
+
+k@laptop:~/GitDemo$ git checkout master
+Switched to branch 'master'
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+
+k@laptop:~/GitDemo$ git log --oneline
+0c97f22 removed three updates
+42dacd8 name changed
+...
+28a0a9e deleted OldBook
+09a5016 Adding OldBook
+b440952 initial commit
+As we can see the commit we've made is not in this 'master' branch.
+
+Creating & Switching Branches at one shot
+Now we want to create a new branch and switch to the new branch at the same time with one git command. We can use -b flag:
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+k@laptop:~/GitDemo$ git checkout -b boat
+Switched to a new branch 'boat'
+k@laptop:~/GitDemo$ git branch
+* boat
+  car
+  master
+k@laptop:~/GitDemo$ 
+Another useful option for git log to see where the HEAD is and what's the relationships among branches:
+
+log_graph_decorate_all.png
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
