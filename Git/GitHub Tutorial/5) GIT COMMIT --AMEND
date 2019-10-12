@@ -1,0 +1,76 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_commit_amend.php
+
+
+git commit --amend
+The git commit --amend command is a convenient way to fix up the most recent commit. It lets us combine staged changes with the previous commit instead of committing it as an entirely new snapshot.
+
+However, we should never amend commits that have been pushed to a public repository that is being shared with other developers
+
+Here is our current status:
+
+
+current.png
+We see the "Uncommitted changes" which is the two new files(myfile04 and myfile05) in our working directory.
+
+Though we wanted to make a commit the two files together, we ended up committing only one (myfile04):
+
+
+OnlyOneFileCommitted.png
+Here, we edit the two files that we would like to commit in a single snapshot, but then we forget to add one file the first time around. Fixing the error is simply a matter of staging the other file and committing with the --amend flag:
+
+$ git add myfile05.txt
+$ git commit --amend --no-edit
+[master fe5d46a] 4th & 5th
+ 2 files changed, 2 insertions(+)
+ create mode 100644 myfile04.txt
+ create mode 100644 myfile05.txt
+
+4th_5th.png
+
+
+ 
+
+The editor will be populated with the message from the previous commit and including the --no-edit flag will allow us to make the amendment to our commit without changing its commit message. We can change it if necessary, otherwise just save and close the file as usual. The resulting commit will replace the incomplete one, and it will look like we committed the changes to myfile04.txt and myfile05.txt in a single snapshot.
+
+Here is what we've done:
+
+
+WhatWeDid.png
+Picture source: Rewriting history
+
+Amended commits are actually entirely new commits, and the previous commit is removed from the project history. This has the same consequences as resetting a public snapshot.
+
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
