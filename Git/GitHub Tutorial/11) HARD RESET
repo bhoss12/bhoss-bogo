@@ -1,0 +1,137 @@
+git Reset
+The git reset command overwrites (HEAD / Index(staging) / Working directory) in a specific order:
+
+Move whatever branch HEAD points to (stop if --soft).
+AND make the Index look like that (stop here unless --hard).
+AND make the Working Directory look like that.
+
+SoftReset1.png
+We can think of the following three modes as defining the scope of a git reset operation:
+
+Soft
+Moves the HEAD
+The HEAD will be moved without changing the Index (staging area) or Working Directory.
+git reset --soft 4ff01e7
+Mixed (default reset)
+Moves the HEAD
+Updates staging index. Syncs with the contents of whatever tree HEAD now points to so they're the same.
+So, this default reset undoes git add AND git commit.
+git reset --mixed 4ff01e7
+Hard
+Dangerous
+This is the only reset command dangerous (working directory is not safe). The other type of resets can be pretty easily undone, the --hard option cannot, since it overwrites (without checking) any files in the working directory.
+This reset --hard does undo our last commit, all the git adds, and all the work we did in our working directory.
+git reset --hard 4ff01e7
+
+
+ 
+
+Hard Reset
+Before the git reset:
+
+Hard_Reset1.png
+
+After the git reset:
+
+The HEAD is going to move as in the other reset. But this hard reset will completely wipe out our staging index and working directory. So, in that sense it's dangerous. However, sometimes we may need this reset. For example, when our working directory is messed up and hard to locate the problem, we may need to do hard reset.
+
+Hard_Reset2.png
+Picture credit: Learn Git 21: The Hard Reset
+
+
+
+We have 3 files in repository: Appendix, Book1, Introduction.
+
+k@laptop:~/GitDemo$ ls 
+Appendix.rtf		Book1.rtf		Introduction.rtf
+The 'Book1' file looks lie this:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+
+Update A
+Update B
+Update C
+Here is the history of our commits so far:
+
+71c653a Update C
+670c4aa Update B
+08eb088 Adding only Update A
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+
+GitGraph.png
+The most recent commits are the ones for adding three lines of updates (Update A, Update B, and Update C). Now we changed our plan, and we want to backup to before commits for those three updates. Let's reboot, back to 8bdf380.
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+
+k@laptop:~/GitDemo$ git reset --hard 8bdf380
+HEAD is now at 8bdf380 modified the year of death & added published
+We may want to look at the status:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+Clean! That's because everything on our working directory and staging index has been wiped away.
+
+We may also want to check the log:
+
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+
+AfterHardReset.png
+As expected git is no longer aware of the last three update commits.
+
+Also note that the 'Book1' has been backed up to before the three line updates:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
