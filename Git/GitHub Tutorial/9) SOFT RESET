@@ -1,0 +1,162 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Soft_Reset.php
+
+
+git Reset
+The git reset command overwrites (HEAD / Index(staging) / Working directory) in a specific order:
+
+Move whatever branch HEAD points to (stop if --soft).
+AND make the Index look like that (stop here if --mixed).
+AND make the Working Directory look like that (--hard).
+
+SoftReset1.png
+We can think of the following three modes as defining the scope of a git reset operation:
+
+Soft
+Moves the HEAD
+The HEAD will be moved without changing the Index (staging area) or Working Directory.
+git reset --soft 4ff01e7
+Mixed (default reset)
+Moves the HEAD
+Updates staging index. Syncs with the contents of whatever tree HEAD now points to so they're the same.
+So, this default reset undoes git add AND git commit.
+git reset --mixed 4ff01e7
+Hard
+Dangerous
+This is the only reset command dangerous (working directory is not safe). The other type of resets can be pretty easily undone, the --hard option cannot, since it overwrites (without checking) any files in the working directory.
+This reset --hard does undo our last commit, all the git adds, and all the work we did in our working directory.
+git reset --hard 4ff01e7
+
+
+ 
+
+Soft Reset
+We have 3 files in repository: Appendix, Book1, Introduction.
+
+k@laptop:~/GitDemo$ ls 
+Appendix.rtf		Book1.rtf		Introduction.rtf
+The 'Book1' file looks lie this:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+
+Update A
+Update B
+Update C
+Here is the history of our commits so far:
+
+k@laptop:~/GitDemo$ git log --oneline
+c25c610 Update C
+c2621c2 Update B
+e7bf1b0 update A
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+The most recent three commits are just one line insert per one commit, and we don't want them to be three commits but one. So, we need to move head to "8bdf380 modified the year of death & added published", and then we'll make a new commit using git reset --soft:
+
+k@laptop:~/GitDemo$ git reset --soft 8bdf380
+
+
+
+ 
+bogotobogo.com site search:
+ 
+
+Before the git reset:
+
+SoftReset1.png
+
+After the git reset:
+
+SoftReset2.png
+Picture credit: Learn Git 19: The Reset
+
+Now take a look at the diagram after the "git reset --soft" and realize what it did.
+
+It essentially undid the last commit we made. When we reset back to HEAD~ (the parent of HEAD), we are moving the branch back to where it was without changing the Index (staging area) or Working Directory.
+
+So, after the soft reset, if we run git status, we'll see in green the difference between the Index and what the new HEAD is.
+
+
+
+If we check the log:
+
+k@laptop:~/GitDemo$ git log --oneline
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+As we can see the top three commits are gone now, and the HEAD moved to the snapshot just before those three lines were added. In other words, git does not know the existence of the three commit that were in the git before the reset.
+
+
+AfterSoftReset.png
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	modified:   Book1.rtf
+As expected, the 'Book1' in our repo does not have the the three lines because the HEAD is now pointing to before those commits.
+
+Now we want to make just one commit with those three lines combined:
+
+k@laptop:~/GitDemo$ git commit -m "make one commit instead of three commits"
+[master 4c8acfd] make one commit instead of three commits
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+k@laptop:~/GitDemo$ git log --oneline
+4c8acfd make one commit instead of three commits
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
