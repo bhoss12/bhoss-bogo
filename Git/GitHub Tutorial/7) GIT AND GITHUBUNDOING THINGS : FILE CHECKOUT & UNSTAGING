@@ -1,0 +1,116 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Undoing_Checkout_Unstaging.php
+
+
+
+Undoing Things : working directory
+We have 3 files in repository: Appendix, Book1, Introduction.
+
+k@laptop:~/GitDemo$ ls 
+Appendix.rtf		Book1.rtf		Introduction.rtf
+After modifying the 'Book1', we check the git status:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1.rtf
+
+no changes added to commit (use "git add" and/or "git commit -a")
+To check the difference between the two files we can use 'git diff'.
+
+Realizing the changes we made in 'Book1' was wrong, and we totally messed up the file. So, rather than fixing the mess, we want to get it back from the repo's previous version. We can do it using git checkout command. It is going to go up to repository and say "hey repo, we need what you have for the 'Book1'. Can you show it to us?"
+
+k@laptop:~/GitDemo$ git checkout Book1
+Now, we got the one in the repo and everything is now clean:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+
+
+ 
+
+Unstaging - git reset HEAD <file>
+We modified the 'Book1' and put it to staging area:
+
+k@laptop:~/GitDemo$ git add Book1.rtf
+The status looks like this:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	modified:   Book1.rtf
+UncommitedChanges.png
+
+Now, we want to add more info to the file that's already staged. Here we have two choices:
+
+We can modify the file in our working directory and put it into staging area using git add command. Then it will overwrite the file that's in the staging area.
+Simply unstaging it using git reset HEAD following the instruction given in the output from 'git status':
+k@laptop:~/GitDemo$ git reset HEAD Book1.rtf
+Unstaged changes after reset:
+M	Book1.rtf
+If we check the status again after the reset:
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1.rtf
+
+no changes added to commit (use "git add" and/or "git commit -a")
+If we use SourceTree, it is what the "Reset" button on the top menu does:
+
+ResetButton.png
+
+DialogFromResetButton.png
+
+Then, if we click "Discard Changes", it undo the modifications we made on the file.
+
+Confirm.png
+
+At the "OK", we do not have any more "Uncommitted changes" as we can see the picture below:
+
+NoUncommitedChanges.png
+
+When we dig deeper, the reset comprised of two commands in SourceTree and it is labeled as "Reverting" :
+
+git -c reset -q HEAD -- Book1.rtf 
+git -c checkout HEAD -- Book1.rtf 
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
