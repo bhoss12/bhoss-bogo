@@ -1,0 +1,151 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Deleting_Renaming_Files.php
+
+
+
+Git graph
+The following is the graph of this chapter:
+
+Graph.png
+
+
+
+Deleting files
+Deleting files from our repo is simple, delete them, and then commit.
+
+We have 4 files in repository: Book1, Book2, Book3, and OldBook.
+
+k@laptop:~/GitDemo$ ls
+Book1.rtf	Book2.rtf	Book3.rtf	OldBook.rtf
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+k@laptop:~/GitDemo$ 
+Now, we want to remove "OldBook" which is already in our repository.
+
+k@laptop:~/GitDemo$ git rm OldBook.rtf
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	deleted:    OldBook.rtf
+
+no changes added to commit (use "git add" and/or "git commit -a")
+But our repository still has the 'OldBook'. So, we need to do commit the deleted file:
+
+k@laptop:~/GitDemo$ git commit -am "deleted OldBook"
+[master 7a4caa8] deleted OldBook
+ 1 file changed, 9 deletions(-)
+ delete mode 100644 OldBook.rtf
+Now, it's gone and the 'OldBook' became a history. So, deleting a file from a repo is straight forward: delete and commit.
+
+
+
+ 
+
+Renaming files
+We have two ways of renaming a file in our repository.
+
+Renaming a file in a working folder.
+Now we want to rename the 'Book3' to 'Appendix'.
+
+First, we directly rename the file in our working directory:
+
+k@laptop:~/GitDemo$ mv Book3.rtf Appendix.rtf
+k@laptop:~/GitDemo$ ls
+Appendix.rtf	Book1.rtf	Book2.rtf
+If we check the git status:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	deleted:    Book3.rtf
+
+Untracked files:
+  (use "git add ..." to include in what will be committed)
+
+	Appendix.rtf
+
+no changes added to commit (use "git add" and/or "git commit -a")
+The git thinks the 'Book3' is removed and 'Appendix' is added. Now we should remove 'Book3' and add 'Appendix' on repo:
+
+k@laptop:~/GitDemo$ git rm Book3.rtf
+rm 'Book3.rtf'
+k@laptop:~/GitDemo$ git add Appendix.rtf
+Then, check the status again:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	renamed:    Book3.rtf -> Appendix.rtf
+Notice that Git is smart enough to realize what we did was just renaming the file!
+
+All we have to do now is to commit:
+
+k@laptop:~/GitDemo$ git commit -m "renamed Book3 as Appendix"
+[master 8d7d7f1] renamed Book3 as Appendix
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename Book3.rtf => Appendix.rtf (100%)
+Using "git mv" command
+This time we want to rename 'Book2' to "Introduction".
+
+k@laptop:~/GitDemo$ git mv Book2.rtf Introduction.rtf
+Now git immediately recognizes we renamed it:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	renamed:    Book2.rtf -> Introduction.rtf
+All we have to do now is doing commit:
+
+k@laptop:~/GitDemo$ git commit -m "Book2->Introduction"
+[master e1ec728] Book2->Introduction
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename Book2.rtf => Introduction.rtf (100%)
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
