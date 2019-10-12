@@ -1,0 +1,136 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Reverting_Commit.php
+
+
+
+Reverting commit
+We have 3 files in repository: Appendix, Book1, Introduction.
+
+k@laptop:~/GitDemo$ ls 
+Appendix  Book1  Introduction
+
+Here is the graph from SourceTree:
+
+CommitsSoFar.png
+
+
+ 
+
+However, we found there was an error in the previous commit in 'Book1':
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1889
+Published in 1849
+We put the wrong year, and it should be 1849 not 1889. So, we look into the git log to check which commit it was:
+
+k@laptop:~/GitDemo$ git log --oneline
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+The git log places the most recent one at the top of the list, so it looks like we have to revert the 2nd commit from the top which we put "birth and death". At first, we may be tempted to do git checkout. But we do not want to checkout the most recent one. So, we need to tell git don't do the top one, and to do so, we will not only provide the file name but also the address of the specific commit:
+
+k@laptop:~/GitDemo$ git checkout 691923c -- Book1.rtf
+We're telling git that we want to checkout the 'Book1' file not the entire snapshot. If we don't put --, git will think we're doing the branch. Remember we're not dealing with branch this time.
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	modified:   Book1.rtf
+
+RevertingCommit_UncommittedChanges.png
+We see the 'Book1' is down to our staging index, and magically the 'Book1' in our working directory has been changed as well. As we can see there is no published year:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1889
+We want to modify the year when Poe dies before we resubmit:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+Check the status before commit and stage it:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	modified:   Book1.rtf
+
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1.rtf
+
+k@laptop:~/GitDemo$ git add Book1.rtf
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD ..." to unstage)
+
+	modified:   Book1.rtf
+Now, commit it:
+
+k@laptop:~/GitDemo$ git commit -m "modified the year of death & added published"
+[master 8bdf380] modified the year of death & added published
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+We've gone back in time, found an old copy, and made some corrections.
+
+If we do a git log, we can see our new commit in at the top of the log:
+
+k@laptop:~/GitDemo$ git log --oneline
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+We can check the log again from SourceTree's graph:
+
+LogCheckSourceTree.png
+
+There are three types of reset for undoing commit:
+
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
