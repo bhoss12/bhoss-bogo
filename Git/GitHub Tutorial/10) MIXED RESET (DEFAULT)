@@ -1,0 +1,185 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Mixed_Default_Reset.php
+
+
+git Reset
+The git reset command overwrites (HEAD / Index(staging) / Working directory) in a specific order:
+
+Move whatever branch HEAD points to (stop if --soft).
+AND make the Index look like that (stop here unless --hard).
+AND make the Working Directory look like that.
+
+SoftReset1.png
+We can think of the following three modes as defining the scope of a git reset operation:
+
+Soft
+Moves the HEAD
+The HEAD will be moved without changing the Index (staging area) or Working Directory.
+git reset --soft 4ff01e7
+Mixed (default reset)
+Moves the HEAD
+Updates staging index. Syncs with the contents of whatever tree HEAD now points to so they're the same.
+So, this default reset undoes git add And git commit.
+git reset --mixed 4ff01e7
+Hard
+Dangerous
+This is the only reset command dangerous (working directory is not safe). The other type of resets can be pretty easily undone, the --hard option cannot, since it overwrites (without checking) any files in the working directory.
+This reset --hard does undo our last commit, all the git adds, and all the work we did in our working directory.
+git reset --hard 4ff01e7
+
+
+ 
+
+Mixed Reset (Default)
+Before the git reset:
+
+Default_Reset1.png
+
+After the git reset:
+
+The HEAD is going to move, but instead of "v3" coming down and being our staging index version, "v2" is going to come down and becomes our staging version. That means nothing in our stage because the one in our stage will match up and link with the one in our repository. In other words, we're going to have nothing to commit (everything will be unstaged)
+
+So, what the "git reset" does is rolling back (it resets git adds AND git commit).
+
+The only change is in our working directory. So, what this default (or mixed) reset does is to make sure our staging index is the same as the HEAD in our repository.
+
+Default_Reset2.png
+Picture credit: Learn Git 20: The Mixed Reset
+
+
+
+We have 3 files in repository: Appendix, Book1, Introduction.
+
+k@laptop:~/GitDemo$ ls 
+Appendix.rtf		Book1.rtf		Introduction.rtf
+The 'Book1' file looks lie this:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+
+Update A
+Update B
+Update C
+Here is the history of our commits so far:
+
+k@laptop:~/GitDemo$ git log --oneline
+4c8acfd make one commit instead of three commits
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+The most recent commit is the one for adding three lines of updates (Update A, Update B, and Update C) at one shot. Now we changed our plan, and we want to backup to before the recent commit. Because the git reset --mixed is the default, we can just use git reset instead:
+
+k@laptop:~/GitDemo$ git reset 8bdf380
+Unstaged changes after reset:
+M	Book1.rtf
+We can look at the status:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1.rtf
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+AfterDefaultReset.png
+As shown in the picture at the beginning, the HEAD has been moved and pointing to the previous snapshot, the only difference is the 'Book1' in working directory. Note that it has the three lines of update which is the last commit:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+
+Update A
+Update B
+Update C
+We do not see the difference between staging-repo and between working directory-the last commit:
+
+git_diffs.png
+k@laptop:~/GitDemo$ git diff --staged
+k@laptop:~/GitDemo$ git diff --cached
+Now we want to delete "Update B" and "Update C", then commit only "Update A" line. So, the modified 'Book1' looks like this:
+
+Annabel Lee
+BY EDGAR ALLAN POE 1809-1849
+Published in 1849
+
+Update A
+Status check after the edit:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1.rtf
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Add and commit:
+
+k@laptop:~/GitDemo$ git add Book1.rtf
+
+k@laptop:~/GitDemo$ git commit -m "Adding only Update A"
+[master 08eb088] Adding only Update A
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+
+k@laptop:~/GitDemo$ git log --oneline
+08eb088 Adding only Update A
+8bdf380 modified the year of death & added published
+3ed224f added published year
+691923c added birth and death
+d5e38ad adde book title
+e1ec728 Book2->Introduction
+8d7d7f1 renamed Book3 as Appendix
+7a4caa8 deleted OldBook
+b28c909 Initial commits - Book1 Book2 Book3 OldBook
+
+AfterUpdatingAOnly.png
+We can do the same to the other two lines of updates. But we'll leave to hard reset which we'll deal with in the next chapter.
+
+One thing about the mixed reset: it does take care of not bringing down our staging index. So, it's a little easier for us to edit right away.
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
