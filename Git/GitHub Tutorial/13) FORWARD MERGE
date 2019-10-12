@@ -1,0 +1,247 @@
+
+https://www.bogotobogo.com/DevOps/SCM/Git/Git_GitHub_Fast-Forward_Merge.php
+
+
+
+Note
+In this chapter, we'll deal with two kinds of fast-forward merge: without commit and with commit.
+
+fast-forward merge without commit is a merge but actually it's a just appending. So, when we simply look at the git log, it's not clear we did merge or not. In the later section, we'll make it clear by making a commit.
+
+
+
+
+
+fast-forward merge w/o commit
+We are currently on the 'master' branch and we have another branch called 'car':
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+Let's look at the difference between 'master' and 'car' branches:
+
+k@laptop:~/GitDemo$ ls
+Appendix  Book1  Introduction
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+
+k@laptop:~/GitDemo$ git diff master..car
+diff --git a/Book1 b/Book1
+index cb70068..6bce16a 100644
+--- a/Book1
++++ b/Book1
+@@ -1,3 +1,5 @@
++This is in 'car' branch.
++
+As we can see the 'car' branch has additional line: "This is in 'car' branch". Since we checked out the 'car' branch, the 'master' branch hasn't been changed at all. So, merging the 'car' branch to the 'master' branch is going to be straight forward. Acutually, all we have to do is to append our update to the 'master' branch. This kind of merge is called fast-forward merge as we can see from the output below:
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+k@laptop:~/GitDemo$ git merge car
+Updating 0c97f22..a7f55e3
+Fast-forward
+ Book1 | 2 ++
+ 1 file changed, 2 insertions(+)
+If we check the log on our 'master' branch, we can see the new merge is recorded there right at the top of the log:
+
+k@laptop:~/GitDemo$ git log --oneline
+a7f55e3 added a line at the beginning
+0c97f22 removed three updates
+42dacd8 name changed
+...
+28a0a9e deleted OldBook
+09a5016 Adding OldBook
+b440952 initial commit
+
+
+If master has diverged since the feature branch was created, the merging the feature branch into master will create a merge commit. This is the typical case.
+
+TypicalMerge.png
+
+If master has not diverged, instead of creating a new commit, git will then simply point master to the latest commit of the feature branch. This is a "fast forward".
+
+FastForwardMerge.png
+
+We can create a new commit to represent the merge even if git would normally fast forward by passing "--no-ff" .
+
+FastForwardMergeWith_no_ff.png
+
+Notation.png
+Picture source: What's a Fast Forward Merge?.
+
+
+
+
+ 
+
+fast-forward merge with commit
+When we simply look at the 'master' branch log, the merge we've done in the previous section is not clear whether it's a merge or not:
+
+k@laptop:~/GitDemo$ git log --graph --oneline
+* a7f55e3 added a line at the beginning
+* 0c97f22 removed three updates
+* 42dacd8 name changed
+...
+* 28a0a9e deleted OldBook
+* 09a5016 Adding OldBook
+* b440952 initial commit
+The logs simply says "added a line at the beginning" even though we clearly did merge. It's not a mistake on our side and the git did what it supposed to do. Now we want to take a little bit different approach to make it clear.
+
+Let's switch to the 'car' branch and make add another line there:
+
+k@laptop:~/GitDemo$ git checkout car
+Switched to branch 'car'
+k@laptop:~/GitDemo$ 
+k@laptop:~/GitDemo$ git branch
+* car
+  master
+Edit the 'Book1' of the 'car' branch:<./p>
+
+This is in 'car' branch.
+This is our 2nd commit on the 'car' branch. 
+The status:
+
+k@laptop:~/GitDemo$ git status
+On branch car
+Changes not staged for commit:
+  (use "git add ..." to update what will be committed)
+  (use "git checkout -- ..." to discard changes in working directory)
+
+	modified:   Book1
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Now we do commit:
+
+k@laptop:~/GitDemo$ git add Book1
+k@laptop:~/GitDemo$ git commit -m "Added 2nd commit to the car branch"
+[car 4552553] Added 2nd commit to the car branch
+ 1 file changed, 1 insertion(+)
+k@laptop:~/GitDemo$ git status
+On branch car
+nothing to commit, working directory clean
+The log:
+
+k@laptop:~/GitDemo$ git log --oneline
+4552553 Added 2nd commit to the car branch
+a7f55e3 added a line at the beginning
+0c97f22 removed three updates
+42dacd8 name changed
+...
+28a0a9e deleted OldBook
+09a5016 Adding OldBook
+b440952 initial commit
+Now we want to make commit and see the log is saying 'merge'. Let's switch to the 'master':
+
+k@laptop:~/GitDemo$ git checkout master
+Switched to branch 'master'
+
+k@laptop:~/GitDemo$ git branch
+  car
+* master
+
+k@laptop:~/GitDemo$ git log --oneline
+a7f55e3 added a line at the beginning
+0c97f22 removed three updates
+42dacd8 name changed
+...
+28a0a9e deleted OldBook
+09a5016 Adding OldBook
+b440952 initial commit
+Check status if it's clean:
+
+k@laptop:~/GitDemo$ git status
+On branch master
+nothing to commit, working directory clean
+Time to merge. We'll tell git that even if we're just appending, we want to make a commit. We don't want to just append and we want to make a new commit that says we merged files here. So, we need to use a flag : --no-ff which means "no fast-forward":
+
+k@laptop:~/GitDemo$ git merge --no-ff car
+
+
+Merge made by the 'recursive' strategy.
+ Book1 | 1 +
+ 1 file changed, 1 insertion(+)
+During the merge process, it will ask us how the message look like. In our case, sublime popped up, and added a line at as shown below. We need to close the editor to move on to the merge process:
+
+Merge branch 'car'
+
+# Please enter a commit message to explain why this merge is necessary,
+# especially if it merges an updated upstream into a topic branch.
+#
+# Lines starting with '#' will be ignored, and an empty message aborts
+# the commit.
+
+Now the 'car' branch merged!!!
+Check the log on the 'master' branch if we have any log regarding the merge:
+
+k@laptop:~/GitDemo$ git log --oneline
+d567a72 Merge branch 'car'
+4552553 Added 2nd commit to the car branch
+a7f55e3 added a line at the beginning
+0c97f22 removed three updates
+42dacd8 name changed
+...
+28a0a9e deleted OldBook
+09a5016 Adding OldBook
+b440952 initial commit
+Indeed!
+
+We have it. The most recent two lines of log:
+
+d567a72 Merge branch 'car'
+4552553 Added 2nd commit to the car branch
+Also, we can see more info from the log if we use -graph option:
+
+graph_log.png
+It shows us how we went off the 2nd commit:
+
+"added a line at the beginning" - The master was updated (in the previous section)
+"Added 2nd commit to the car branch" - We went to the 'car' branch, modified the 'Book1', and did commit
+"Merge branch 'car'" - Then, we merged it.
+Here is an additional info from man git merge:
+
+--ff
+   When the merge resolves as a fast-forward, only update the branch
+   pointer, without creating a merge commit. This is the default
+   behavior.
+
+--no-ff
+   Create a merge commit even when the merge resolves as a
+   fast-forward. This is the default behaviour when merging an
+   annotated (and possibly signed) tag.
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
