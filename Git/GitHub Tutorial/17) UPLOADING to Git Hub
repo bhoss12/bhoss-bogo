@@ -1,0 +1,128 @@
+https://www.bogotobogo.com/DevOps/SCM/Git/GitHub_Uploading.php
+
+My Project
+This is the continuation from the previous tutorial: GIT and GitHub - 4. GitHub Account and SSH Key.
+
+In this section, we'll upload our project to GitHub.
+
+
+ 
+
+I have a C++/Qt5 project that does simple thing: progress bar is linked to moving slider:
+
+HelloGitHub_Slider_Progressbar.png
+
+NewProject.png
+
+The project (HelloGitHub) files are in "C:\MyGit\GitProjects" directory:
+
+GitProjectDirectory.png
+Now we want to upload the project to GitHub.
+
+
+
+
+
+Putting Project to Local Repository
+Let's start with Git Bash.
+
+First, we need to go into the project directory. Then git init to make the project directory to be a repository. After that, put the files into the staging area by git add <file>
+
+Adding_git_add_files.png
+
+Some of the VS2012 files won't allowed to open, but those are kind of temporary but not needed to be put into repository. So, I staged each file individually.
+
+If we do git stat:
+
+git_stat.png
+
+Now, put them into our local repository, git commit -m "initial commit":
+
+git_commit_m_initial_commit.png
+
+We can check the log, git log:
+
+initial_commit_log.png
+
+
+
+Uploading - git push
+
+shortname
+To add a new remote Git repository as a shortname we can reference easily, we run
+
+git remote add [shortname] [url]
+What url we should use?
+
+Go to the GitHub page:
+
+select_repository.png
+
+Select the repository, in this case, "git-demo" and get the url as shown in the picture below:
+
+GetURL.png
+
+We set the short for the remote repository:
+
+setting_short_name_for_remote.png
+
+
+uploading - git push
+Finally, we're ready to upload. We'll use push. git push updates remote refs using local refs, while sending objects necessary to complete the given refs. Since our local repository now knows the short name for remote repository, we can easily upload our project files:
+
+master_pushed.png
+
+Note that we pushed master branch.
+
+
+
+
+
+Check GitHub Uploading
+We can check if our upload was done correctly.
+
+Just refresh the page:
+
+CheckingUploading.png
+
+
+Continue to: GIT and GitHub - 6. GUI.
+
+
+
+
+Git/GitHub Tutorial
+One page express tutorial for GIT and GitHub
+Installation
+add/status/log
+commit and diff
+git commit --amend
+Deleting and Renaming files
+Undoing Things : File Checkout & Unstaging
+Reverting commit
+Soft Reset - (git reset --soft <SHA key>)
+Mixed Reset - Default
+Hard Reset - (git reset --hard <SHA key>)
+Creating & switching Branches
+Fast-forward merge
+Rebase & Three-way merge
+Merge conflicts with a simple example
+GitHub Account and SSH
+Uploading to GitHub
+GUI
+Branching & Merging
+Merging conflicts
+GIT on Ubuntu and OS X - Focused on Branching
+Setting up a remote repository / pushing local project and cloning the remote repo
+Fork vs Clone, Origin vs Upstream
+Git/GitHub Terminologies
+Git/GitHub via SourceTree I : Commit & Push
+Git/GitHub via SourceTree II : Branching & Merging
+Git/GitHub via SourceTree III : Git Work Flow
+Git/GitHub via SourceTree IV : Git Reset
+Git Cheat sheet - quick command reference
+
+
+
+
+
